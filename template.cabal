@@ -87,7 +87,7 @@ library
   build-depends:
     base >=4.7 && <5,
     effectful,
-    effectful-core,
+    effectful-core >=2.5.0.0,
     linear-base,
     transformers,
 

@@ -13,7 +13,7 @@ import System.IO.Resource.Linear (RIO)
 import System.IO.Resource.Linear.Internal qualified as Internal
 
 -- | An effect that allows safely acquiring and releasing resources in a linear monad.
--- See: 'System.IO.Resource.Linear'
+-- See: "System.IO.Resource.Linear"
 data WithResource :: Effect
 
 type instance DispatchOf WithResource = 'Static 'WithSideEffects
