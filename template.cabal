@@ -38,6 +38,7 @@ common extensions
     OverloadedStrings
     QualifiedDo
     StrictData
+    TypeFamilies
 
 common warnings
   ghc-options:
@@ -69,7 +70,10 @@ library
   import: extensions, warnings
   exposed-modules:
     Effectful.Linear
+    Effectful.Linear.Dispatch.Static
     Effectful.Linear.Internal
+    Effectful.Linear.Resource
+    Effectful.Linear.Resource.Internal
 
   other-modules:
     Paths_template
