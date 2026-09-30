@@ -29,11 +29,14 @@ common extensions
   default-extensions:
     BlockArguments
     DeriveAnyClass
+    DerivingVia
     DuplicateRecordFields
     ImpredicativeTypes
+    LinearTypes
     NoFieldSelectors
     OverloadedRecordDot
     OverloadedStrings
+    QualifiedDo
     StrictData
 
 common warnings
@@ -65,6 +68,9 @@ common rts-options
 library
   import: extensions, warnings
   exposed-modules:
+    Effectful.Linear
+    Effectful.Linear.Internal
+
   other-modules:
     Paths_template
 
@@ -75,7 +81,11 @@ library
     src
 
   build-depends:
-    base >=4.7 && <5
+    base >=4.7 && <5,
+    effectful,
+    effectful-core,
+    linear-base,
+    transformers,
 
   default-language: GHC2024
 
