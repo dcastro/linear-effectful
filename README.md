@@ -5,6 +5,6 @@
     Edit that file, and then run `just pandoc`.
 -->
 
-# template
+# `linear-effectful`
 
 TODO

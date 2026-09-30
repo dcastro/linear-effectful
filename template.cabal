@@ -1,10 +1,10 @@
 cabal-version: 2.2
-name: template
+name: linear-effectful
 version: 0.0.1
 synopsis: TODO
 description: TODO
-homepage: https://github.com/githubuser/template#readme
-bug-reports: https://github.com/githubuser/template/issues
+homepage: https://github.com/githubuser/linear-effectful#readme
+bug-reports: https://github.com/githubuser/linear-effectful/issues
 author: Diogo Castro
 maintainer: dc@diogocastro.com
 copyright: 2026 Diogo Castro
@@ -23,7 +23,7 @@ extra-doc-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/template
+  location: https://github.com/githubuser/linear-effectful
 
 common extensions
   default-extensions:
@@ -76,10 +76,10 @@ library
     Effectful.Linear.Resource.Internal
 
   other-modules:
-    Paths_template
+    Paths_linear_effectful
 
   autogen-modules:
-    Paths_template
+    Paths_linear_effectful
 
   hs-source-dirs:
     src
@@ -93,16 +93,16 @@ library
 
   default-language: GHC2024
 
-test-suite template-test
+test-suite linear-effectful-test
   import: extensions, warnings, rts-options
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
     Example.ExampleSpec
-    Paths_template
+    Paths_linear_effectful
 
   autogen-modules:
-    Paths_template
+    Paths_linear_effectful
 
   hs-source-dirs:
     test

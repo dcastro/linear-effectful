@@ -8,7 +8,7 @@ module Readme where
 \end{code}
 
 
-template
+`linear-effectful`
 ===
 
 TODO

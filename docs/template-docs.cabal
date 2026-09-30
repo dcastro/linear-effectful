@@ -2,10 +2,10 @@ cabal-version: 2.2
 -- This file has been generated from package.yaml by hpack version 0.39.1.
 --
 -- see: https://github.com/sol/hpack
-name: template-docs
+name: linear-effectful-docs
 version: 0.1.0.0
-homepage: https://github.com/dcastro/template#readme
-bug-reports: https://github.com/dcastro/template/issues
+homepage: https://github.com/dcastro/linear-effectful#readme
+bug-reports: https://github.com/dcastro/linear-effectful/issues
 author: Diogo Castro
 maintainer: dc@diogocastro.com
 copyright: 2026 Diogo Castro
@@ -14,17 +14,17 @@ build-type: Simple
 
 source-repository head
   type: git
-  location: https://github.com/dcastro/template
+  location: https://github.com/dcastro/linear-effectful
 
 library
   exposed-modules:
     Readme
 
   other-modules:
-    Paths_template_docs
+    Paths_linear_effectful_docs
 
   autogen-modules:
-    Paths_template_docs
+    Paths_linear_effectful_docs
 
   hs-source-dirs:
     src

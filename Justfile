@@ -36,7 +36,7 @@ checks:
     cabal clean && just min-deps
 
 min-deps:
-    cabal build lib:template \
+    cabal build lib:linear-effectful \
         --project-file=cabal.project.min-deps \
         --prefer-oldest \
         --builddir=dist-min-deps \
@@ -50,7 +50,7 @@ doctest:
         -XGHC2024 -XBlockArguments -XQualifiedDo -XDerivingVia -XLinearTypes -XTypeFamilies
 
 haddock:
-    ./scripts/check_haddock_warnings.sh lib:template
+    ./scripts/check_haddock_warnings.sh lib:linear-effectful
 
 # Run haddock in "file watch" mode
 haddock-fw:
@@ -58,7 +58,7 @@ haddock-fw:
 
 haddock-hackage *ARGS:
     cabal update
-    cabal haddock lib:template --haddock-for-hackage {{ ARGS }}
+    cabal haddock lib:linear-effectful --haddock-for-hackage {{ ARGS }}
 
 pandoc:
     ./scripts/run_pandoc.sh
@@ -89,7 +89,7 @@ publish-candidate-docs *ARGS:
     rm -rf release/docs
     mkdir -p release/docs
     cabal update
-    cabal haddock lib:template --haddock-for-hackage --builddir release/docs
+    cabal haddock lib:linear-effectful --haddock-for-hackage --builddir release/docs
     cabal upload --documentation {{ ARGS }} release/docs/*-docs.tar.gz
 
 publish-final-docs:
