@@ -66,15 +66,8 @@ pandoc:
 ############################################################################
 ## Release
 ############################################################################
-# Checklist:
-# - [ ] Update version in the cabal file
-# - [ ] Update changelog
-# - [ ] Add `@since` annotations to all new public API
-# - [ ] Review the `min-deps` command
-# - [ ] Update `tested-with`
-# - [ ] Create GitHub release & tag the commit
 
-publish-candidate:
+upload-candidate:
     just checks
 
     rm -rf dist-newstyle
@@ -83,7 +76,7 @@ publish-candidate:
     cabal sdist --builddir release
     cabal upload release/sdist/*.tar.gz
 
-publish-candidate-docs *ARGS:
+upload-candidate-docs *ARGS:
     just checks
 
     rm -rf release/docs
@@ -92,5 +85,5 @@ publish-candidate-docs *ARGS:
     cabal haddock lib:linear-effectful --haddock-for-hackage --builddir release/docs
     cabal upload --documentation {{ ARGS }} release/docs/*-docs.tar.gz
 
-publish-final-docs:
-    just publish-candidate-docs --publish
+upload-final-docs:
+    just upload-candidate-docs --publish
