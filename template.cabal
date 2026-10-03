@@ -59,6 +59,7 @@ common warnings
     -Wno-unused-packages
     -Wno-missing-kind-signatures
     -Wno-missing-role-annotations
+    -Wno-unticked-promoted-constructors
 
 common rts-options
   ghc-options:
@@ -76,6 +77,8 @@ library
     Effectful.Linear.Resource.Internal
 
   other-modules:
+    Effectful.Linear.Utils
+    Effectful.Linear.Utils.RedundantConstraint
     Paths_linear_effectful
 
   autogen-modules:
