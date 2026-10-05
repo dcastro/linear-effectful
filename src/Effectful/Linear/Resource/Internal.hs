@@ -23,13 +23,6 @@ type instance DispatchOf WithResource = 'Static 'WithSideEffects
 
 newtype instance StaticRep WithResource = WithResource (IORef Internal.ReleaseMap)
 
--- | This function is unsafe because it can be used to introduce arbitrary "IO" actions into pure `Eff` computations.
-unsafeResourceLEff_ :: (WithResource :> es) => RIO a %1 -> LEff es a
-unsafeResourceLEff_ (Internal.RIO rio) =
-  Linear.do
-    Ur (WithResource releaseMap) <- LinearStatic.getStaticRep @WithResource
-    unsafeLEff_ (rio releaseMap)
-
 ----------------------------------------------------------------------------
 -- RIO Compatibility
 ----------------------------------------------------------------------------

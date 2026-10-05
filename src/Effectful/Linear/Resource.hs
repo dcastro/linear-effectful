@@ -7,9 +7,6 @@ module Effectful.Linear.Resource
     -- * RIO Compatibility
     toRIO,
     fromRIO,
-
-    -- * Unsafe
-    unsafeResourceLEff_,
   )
 where
 
