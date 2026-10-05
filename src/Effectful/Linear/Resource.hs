@@ -4,6 +4,8 @@ module Effectful.Linear.Resource
 
     -- * Creating new types of resources
     RIO.Resource,
+    unsafeAcquire,
+    release,
 
     -- * RIO Compatibility
     toRIO,

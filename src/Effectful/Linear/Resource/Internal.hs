@@ -11,6 +11,7 @@ import Effectful.Dispatch.Static (SideEffects (..), StaticRep)
 import Effectful.Dispatch.Static.Primitive (Env)
 import Effectful.Linear.Dispatch.Static qualified as LinearStatic
 import Effectful.Linear.Internal
+import System.IO.Linear qualified as Linear
 import System.IO.Resource.Linear (RIO)
 import System.IO.Resource.Linear qualified as RIO
 import System.IO.Resource.Linear.Internal qualified as Internal
@@ -29,6 +30,22 @@ runResource action =
   unsafeLEff \env -> do
     Linear.liftSystemIO
       (RIO.run (toRIO env action))
+
+----------------------------------------------------------------------------
+-- Creating new types of resources
+----------------------------------------------------------------------------
+
+-- | Given a resource in the "System.IO.Linear.IO" monad, and
+-- given a function to release that resource, provides that resource in
+-- the @RIO@ monad. For example, releasing a @Handle@ from "System.IO"
+-- would be done with @fromSystemIO hClose@. Because this release function
+-- is an input, and could be wrong, this function is unsafe.
+unsafeAcquire :: (WithResource :> es) => Linear.IO (Ur a) -> (a -> Linear.IO ()) -> LEff es (RIO.Resource a)
+unsafeAcquire acquire release = fromRIO (RIO.unsafeAcquire acquire release)
+
+-- | @'release' r@ calls the release function provided when @r@ was acquired.
+release :: (WithResource :> es) => RIO.Resource a %1 -> LEff es ()
+release res = fromRIO (RIO.release res)
 
 ----------------------------------------------------------------------------
 -- RIO Compatibility
