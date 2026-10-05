@@ -41,7 +41,7 @@ linearBracket = Unsafe.toLinear3 bracket'
             use'
         )
 
--- | This function is marked as "unsafe" because it discards the linear constraint on `a`.
+-- | This function is marked as "unsafe" because it discards the linear constraint on @a@.
 unsafeToSystemIO :: Linear.IO a %1 -> System.IO a
 unsafeToSystemIO (Linear.IO m) =
   System.IO (\s -> m s)

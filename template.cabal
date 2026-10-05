@@ -88,10 +88,13 @@ library
     src
 
   build-depends:
+    -- Constraints:
+    --   * We rely on the `MonadIO RIO` instance I added to `linear-base` in 0.8.0.
+    --     https://github.com/tweag/linear-base/releases/tag/v0.8.0
     base >=4.7 && <5,
     effectful,
-    effectful-core >=2.5.0.0,
-    linear-base,
+    effectful-core >=2.4.0.0,
+    linear-base >=0.8.0,
     transformers,
 
   default-language: GHC2024
