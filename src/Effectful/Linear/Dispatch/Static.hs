@@ -18,19 +18,21 @@ getStaticRep =
   unsafeLEff \es ->
     Linear.liftSystemIOU (Static.getEnv es)
 
+-- | Run a statically dispatched effect with the given initial representation
+-- and return the final value, discarding the final representation.
 evalStaticRep ::
   forall e sideEffects es a.
   (HasCallStack, DispatchOf e ~ Static sideEffects, MaybeIOE sideEffects es) =>
   StaticRep e ->
   LEff (e : es) a %1 ->
   LEff es a
-evalStaticRep staticRep (LEff act) = Control.do
+evalStaticRep staticRep (LEff act) = Linear.do
   -- NOTE: this constraint forces `runResource` to have an `IOE :> es` constraint
-  redundantConstraint @(MaybeIOE sideEffects es) Control.do
+  redundantConstraint @(MaybeIOE sideEffects es) Linear.do
     unsafeLEff \env ->
       Utils.linearBracket @(Env (e : es)) @() @a
         (Linear.liftSystemIOU (Static.consEnv @e staticRep Static.dummyRelinker env))
         (\env -> Linear.liftSystemIO (Static.unconsEnv env))
-        ( \env -> Control.do
+        ( \env -> Linear.do
             act env
         )

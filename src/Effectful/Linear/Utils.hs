@@ -1,7 +1,7 @@
 module Effectful.Linear.Utils where
 
 import Control.Exception qualified as Exception
-import Control.Functor.Linear qualified as Control
+import Control.Functor.Linear qualified as Linear
 import Data.Unrestricted.Linear (Consumable, Ur (..), lseq)
 import GHC.IO qualified as System
 import System.IO.Linear qualified as Linear
@@ -27,12 +27,12 @@ linearBracket = Unsafe.toLinear3 bracket'
       (a -> Linear.IO b) ->
       (a -> Linear.IO c) ->
       Linear.IO c
-    bracket' acquire release use = Control.do
+    bracket' acquire release use = Linear.do
       let acquire' = unsafeToSystemIO acquire
-      let release' (Ur a) = unsafeToSystemIO Control.do
+      let release' (Ur a) = unsafeToSystemIO Linear.do
             b <- release a
             -- Consume `b`
-            b `lseq` Control.pure ()
+            b `lseq` Linear.pure ()
       let use' (Ur a) = unsafeToSystemIO (use a)
       Linear.fromSystemIO
         ( Exception.bracket @(Ur a) @() @c
