@@ -44,35 +44,8 @@ min-deps:
         --with-compiler=ghc-9.10.3
 
 doctest:
-    #!/usr/bin/env bash
-    set -euo pipefail
-
     ./scripts/check_doctest.sh
-    cabal install doctest \
-        --ignore-project \
-        --with-compiler=ghc-9.14.1 \
-        --installdir=./bin \
-        --install-method=copy \
-        --overwrite-policy=always
-
-    # Update `plan.json` so that it lists the test suites and benchmarks too.
-    cabal build all --enable-tests --enable-benchmarks --dry-run > /dev/null
-
-    # Run doctest for each component of each package in the project.
-    # We can't use `cabal repl all --enable-multi-repl`, because doctest does not support the `-unit` flag.
-    jq -r '
-        .["install-plan"][]
-        | select(.style == "local")
-        | if .["component-name"] == "lib"
-          then "\(.["pkg-name"]):lib:\(.["pkg-name"])"
-          else "\(.["pkg-name"]):\(.["component-name"])"
-          end
-        ' dist-newstyle/cache/plan.json \
-    | while read -r target; do
-        echo "Running doctest for ${target}"
-        # Cabal runs the repl in the package's directory, so the path to doctest must be absolute.
-        cabal repl "${target}" --with-repl="{{ justfile_directory() }}/bin/doctest" --repl-options=-w
-    done
+    ./scripts/run_doctest.sh
 
 haddock:
     ./scripts/check_haddock_warnings.sh lib:linear-effectful
