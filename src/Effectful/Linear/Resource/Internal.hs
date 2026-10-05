@@ -25,7 +25,12 @@ type instance DispatchOf WithResource = 'Static 'WithSideEffects
 
 newtype instance StaticRep WithResource = WithResource (IORef Internal.ReleaseMap)
 
-runResource :: forall a es. (IOE :> es) => LEff (WithResource : es) (Ur a) -> LEff es a
+runResource ::
+  forall a es.
+  (IOE :> es) =>
+  -- NOTE: the `Ur a` prevents linear variables from *escaping* this scope,
+  -- and the non-linear arrow prevents linear variables from *entering* this scope.
+  LEff (WithResource : es) (Ur a) -> LEff es a
 runResource action =
   unsafeLEff \env -> do
     Linear.liftSystemIO
