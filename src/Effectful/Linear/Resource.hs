@@ -1,5 +1,6 @@
 module Effectful.Linear.Resource
   ( WithResource,
+    runResource,
 
     -- * Creating new types of resources
     RIO.Resource,

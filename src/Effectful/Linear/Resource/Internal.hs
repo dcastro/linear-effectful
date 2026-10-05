@@ -12,6 +12,7 @@ import Effectful.Dispatch.Static.Primitive (Env)
 import Effectful.Linear.Dispatch.Static qualified as LinearStatic
 import Effectful.Linear.Internal
 import System.IO.Resource.Linear (RIO)
+import System.IO.Resource.Linear qualified as RIO
 import System.IO.Resource.Linear.Internal qualified as Internal
 import System.IO.Resource.Linear.Internal qualified as RIO.Internal
 
@@ -22,6 +23,12 @@ data WithResource :: Effect
 type instance DispatchOf WithResource = 'Static 'WithSideEffects
 
 newtype instance StaticRep WithResource = WithResource (IORef Internal.ReleaseMap)
+
+runResource :: forall a es. (IOE :> es) => LEff (WithResource : es) (Ur a) -> LEff es a
+runResource action =
+  unsafeLEff \env -> do
+    Linear.liftSystemIO
+      (RIO.run (toRIO env action))
 
 ----------------------------------------------------------------------------
 -- RIO Compatibility
