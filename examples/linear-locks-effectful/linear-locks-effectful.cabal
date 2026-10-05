@@ -1,0 +1,113 @@
+cabal-version: 2.2
+name: linear-locks-effectful
+version: 0.0.1
+synopsis: TODO
+description: TODO
+homepage: https://github.com/dcastro/linear-locks-effectful#readme
+bug-reports: https://github.com/dcastro/linear-locks-effectful/issues
+author: Diogo Castro
+maintainer: dc@diogocastro.com
+copyright: 2026 Diogo Castro
+license: BSD-3-Clause
+license-file: LICENSE
+build-type: Simple
+tested-with:
+  ghc ==9.10.3
+  ghc ==9.14.1
+
+extra-source-files:
+  README.md
+
+extra-doc-files:
+  CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/dcastro/linear-locks-effectful
+
+common extensions
+  default-extensions:
+    BlockArguments
+    DeriveAnyClass
+    DerivingVia
+    DuplicateRecordFields
+    ImpredicativeTypes
+    LinearTypes
+    NoFieldSelectors
+    OverloadedRecordDot
+    OverloadedStrings
+    QualifiedDo
+    StrictData
+    TypeFamilies
+
+common warnings
+  ghc-options:
+    -Weverything
+    -Wno-name-shadowing
+    -Wno-missing-exported-signatures
+    -Wno-missing-import-lists
+    -Wno-missing-export-lists
+    -Wno-missed-specialisations
+    -Wno-all-missed-specialisations
+    -Wno-unsafe
+    -Wno-safe
+    -Wno-missing-local-signatures
+    -Wno-monomorphism-restriction
+    -Wno-implicit-prelude
+    -Wno-prepositive-qualified-module
+    -Wno-missing-safe-haskell-mode
+    -Wno-unused-packages
+    -Wno-missing-kind-signatures
+    -Wno-missing-role-annotations
+    -Wno-unticked-promoted-constructors
+
+common rts-options
+  ghc-options:
+    -threaded
+    -rtsopts
+    -with-rtsopts=-N
+
+library
+  import: extensions, warnings
+  exposed-modules:
+  other-modules:
+    Paths_linear_locks_effectful
+
+  autogen-modules:
+    Paths_linear_locks_effectful
+
+  hs-source-dirs:
+    src
+
+  build-depends:
+    base >=4.7 && <5,
+    effectful,
+    effectful-core >=2.4.0.0,
+    linear-base >=0.8.0,
+    linear-effectful,
+    transformers,
+
+  default-language: GHC2024
+
+test-suite linear-locks-effectful-test
+  import: extensions, warnings, rts-options
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+    Example.ExampleSpec
+    Paths_linear_locks_effectful
+
+  autogen-modules:
+    Paths_linear_locks_effectful
+
+  hs-source-dirs:
+    test
+
+  build-tool-depends:
+    sydtest-discover:sydtest-discover
+
+  build-depends:
+    base,
+    sydtest,
+
+  default-language: GHC2024

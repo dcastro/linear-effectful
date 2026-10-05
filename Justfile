@@ -46,7 +46,7 @@ min-deps:
 doctest:
     ./scripts/check_doctest.sh
     cabal build all --enable-tests
-    cabal exec -- doctest $(find src test docs-hs \( -name '*.lhs' -o -name '*.hs' \) ! -path test/Spec.hs -print) \
+    cabal exec -- doctest $(find src test examples docs-hs \( -name '*.lhs' -o -name '*.hs' \) ! -path test/Spec.hs -print) \
         -XGHC2024 -XBlockArguments -XQualifiedDo -XDerivingVia -XLinearTypes -XTypeFamilies
 
 haddock:

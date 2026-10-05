@@ -2,6 +2,7 @@ with-compiler: ghc-9.14.1
 packages:
   ./
   docs-hs
+  examples/linear-locks-effectful
 
 -- `sydtest` uses  `svg-builder`.
 -- The latest version of `svg-builder` has an upper bound on base < 4.22.
