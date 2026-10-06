@@ -1,4 +1,7 @@
-module Effectful.Linear.Utils where
+module Effectful.Linear.Utils
+  ( linearBracket,
+  )
+where
 
 import Control.Exception qualified as Exception
 import Control.Functor.Linear qualified as Linear
