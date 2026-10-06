@@ -70,6 +70,9 @@ common rts-options
 library
   import: extensions, warnings
   exposed-modules:
+    Effectful.LinearLocks
+    Effectful.LinearLocks.Utils.RedundantConstraint
+
   other-modules:
     Paths_linear_locks_effectful
 
@@ -81,11 +84,10 @@ library
 
   build-depends:
     base >=4.7 && <5,
-    effectful,
     effectful-core >=2.4.0.0,
     linear-base >=0.8.0,
     linear-effectful,
-    transformers,
+    linear-locks,
 
   default-language: GHC2024
 
