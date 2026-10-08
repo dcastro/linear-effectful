@@ -71,6 +71,8 @@ library
   import: extensions, warnings
   exposed-modules:
     Effectful.LinearLocks
+    Effectful.LinearLocks.Internal
+    Effectful.LinearLocks.Mutex
     Effectful.LinearLocks.Utils.RedundantConstraint
 
   other-modules:

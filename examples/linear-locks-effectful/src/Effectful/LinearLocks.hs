@@ -20,29 +20,17 @@ where
 import Control.Monad.IO.Class.Linear qualified as Linear
 import Data.Unrestricted.Linear (Ur)
 import Effectful
-import Effectful.Dispatch.Static (SideEffects (..), StaticRep, unsafeEff_)
-import Effectful.Dispatch.Static qualified as Static
+import Effectful.Dispatch.Static (unsafeEff_)
 import Effectful.Linear (LEff)
 import Effectful.Linear qualified as LE
 import Effectful.Linear.Resource (WithResource)
 import Effectful.Linear.Resource qualified as LER
+import Effectful.LinearLocks.Internal
 import Effectful.LinearLocks.Utils.RedundantConstraint qualified as Utils
 import GHC.TypeLits (type (+), type (<=))
 import LinearLocks (IsLockSet, LockKey, LockSet)
 import LinearLocks qualified as LL
 import LinearLocks.Internal.LockSet qualified as LL.Internal
-
-----------------------------------------------------------------------------
--- Effect
-----------------------------------------------------------------------------
-data Locks :: Effect
-
-type instance DispatchOf Locks = 'Static 'WithSideEffects
-
-data instance StaticRep Locks = Locks
-
-runLocks :: (IOE :> es) => Eff (Locks : es) a -> Eff es a
-runLocks = Static.evalStaticRep Locks
 
 ----------------------------------------------------------------------------
 -- Lifted functions
