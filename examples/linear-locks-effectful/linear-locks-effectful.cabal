@@ -97,8 +97,9 @@ test-suite linear-locks-effectful-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-    Example.ExampleSpec
     Paths_linear_locks_effectful
+    Test.Effectful.LinearLocks.MutexSpec
+    Test.Effectful.LinearLocks.Utils
 
   autogen-modules:
     Paths_linear_locks_effectful
@@ -111,6 +112,14 @@ test-suite linear-locks-effectful-test
 
   build-depends:
     base,
+    effectful,
+    effectful-core,
+    linear-base,
+    linear-effectful,
+    linear-locks,
+    linear-locks-effectful,
+    list-t,
+    stm-containers,
     sydtest,
 
   default-language: GHC2024
