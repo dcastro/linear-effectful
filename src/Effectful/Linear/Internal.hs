@@ -1,3 +1,4 @@
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_HADDOCK not-home #-}
 
 module Effectful.Linear.Internal where
@@ -10,6 +11,7 @@ import Data.Unrestricted.Linear (Ur)
 import Effectful
 import Effectful.Dispatch.Static qualified as Static
 import Effectful.Dispatch.Static.Primitive (Env)
+import Effectful.Linear.Utils.RedundantConstraint (redundantConstraint)
 import System.IO.Linear qualified as Linear
 
 -- | A linear "Eff" monad.
@@ -25,6 +27,11 @@ newtype LEff (es :: [Effect]) a = LEff (Env es -> Linear.IO a)
 
 -- We don't want `LEff es1 a` to be coercible to `LEff es2 a`.
 type role LEff nominal representational
+
+instance (IOE :> es) => Linear.MonadIO (LEff es) where
+  liftIO =
+    redundantConstraint @(IOE :> es) Linear.do
+      unsafeLEff_
 
 unLEff :: LEff es a %1 -> (Env es -> Linear.IO a)
 unLEff (LEff f) = f
