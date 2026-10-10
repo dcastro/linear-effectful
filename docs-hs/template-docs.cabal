@@ -17,14 +17,9 @@ source-repository head
   location: https://github.com/dcastro/linear-effectful
 
 library
+  -- cabal-gild: discover src
   exposed-modules:
     Readme
-
-  other-modules:
-    Paths_linear_effectful_docs
-
-  autogen-modules:
-    Paths_linear_effectful_docs
 
   hs-source-dirs:
     src

@@ -66,19 +66,18 @@ common rts-options
     -rtsopts
     -with-rtsopts=-N
 
+common paths
+  other-modules: Paths_linear_locks_effectful
+  autogen-modules: Paths_linear_locks_effectful
+
 library
-  import: extensions, warnings
+  import: extensions, warnings, paths
+  -- cabal-gild: discover src
   exposed-modules:
     Effectful.LinearLocks
     Effectful.LinearLocks.Internal
     Effectful.LinearLocks.Mutex
     Effectful.LinearLocks.Utils.RedundantConstraint
-
-  other-modules:
-    Paths_linear_locks_effectful
-
-  autogen-modules:
-    Paths_linear_locks_effectful
 
   hs-source-dirs:
     src
@@ -96,13 +95,10 @@ test-suite linear-locks-effectful-test
   import: extensions, warnings, rts-options
   type: exitcode-stdio-1.0
   main-is: Spec.hs
+  -- cabal-gild: discover test --exclude=test/Spec.hs
   other-modules:
-    Paths_linear_locks_effectful
     Test.Effectful.LinearLocks.MutexSpec
     Test.Effectful.LinearLocks.Utils
-
-  autogen-modules:
-    Paths_linear_locks_effectful
 
   hs-source-dirs:
     test

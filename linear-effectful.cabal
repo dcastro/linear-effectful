@@ -66,8 +66,13 @@ common rts-options
     -rtsopts
     -with-rtsopts=-N
 
+common paths
+  other-modules: Paths_linear_effectful
+  autogen-modules: Paths_linear_effectful
+
 library
-  import: extensions, warnings
+  import: extensions, warnings, paths
+  -- cabal-gild: discover src --exclude=src/Effectful/Linear/Utils*/**
   exposed-modules:
     Effectful.Linear
     Effectful.Linear.Dispatch.Static
@@ -75,13 +80,10 @@ library
     Effectful.Linear.Resource
     Effectful.Linear.Resource.Internal
 
+  -- cabal-gild: discover src --include=src/Effectful/Linear/Utils*/**
   other-modules:
     Effectful.Linear.Utils
     Effectful.Linear.Utils.RedundantConstraint
-    Paths_linear_effectful
-
-  autogen-modules:
-    Paths_linear_effectful
 
   hs-source-dirs:
     src
@@ -101,12 +103,9 @@ test-suite linear-effectful-test
   import: extensions, warnings, rts-options
   type: exitcode-stdio-1.0
   main-is: Spec.hs
+  -- cabal-gild: discover test --exclude=test/Spec.hs
   other-modules:
     Example.ExampleSpec
-    Paths_linear_effectful
-
-  autogen-modules:
-    Paths_linear_effectful
 
   hs-source-dirs:
     test
