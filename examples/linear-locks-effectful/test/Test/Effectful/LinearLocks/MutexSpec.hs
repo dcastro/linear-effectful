@@ -52,14 +52,12 @@ runEffTest eff =
 -- >>> unit_mutexes_cannot_be_locked_in_wrong_order = do
 -- >>>   m1 <- Mutex.new 2 "hello"
 -- >>>   m2 <- Mutex.new 4 "world"
--- >>>   runLEff L.do
--- >>>     lockScope \key -> L.do
--- >>>       (mg2, key) <- Mutex.acquire key m2
--- >>>       (mg1, key) <- Mutex.acquire key m1
--- >>>       Mutex.release mg1
--- >>>       Mutex.release mg2
--- >>>       dropKey key
--- >>>       L.pure (Ur (Ur ()))
+-- >>>   lockScope \key -> L.do
+-- >>>     (mg2, key) <- Mutex.acquire key m2
+-- >>>     (mg1, key) <- Mutex.acquire key m1
+-- >>>     Mutex.release mg1
+-- >>>     Mutex.release mg2
+-- >>>     dropKeyAndReturn key ()
 -- >>> :}
 -- ...
 -- ... • Cannot satisfy: 5 <= 2
@@ -69,33 +67,29 @@ spec :: Spec
 spec = describe "Mutex" do
   it @_ @_ @EffTest_ "read mutex" do
     mutex <- Mutex.new @String 0 "hello"
-    str <- runLEff L.do
+    str <-
       lockScope \key -> L.do
         (mg, key) <- Mutex.acquire key mutex
         (Ur str, mg) <- Mutex.read mg
         Mutex.release mg
-        dropKey key
-        L.pure (Ur (Ur str))
+        dropKeyAndReturn key str
     liftIO $ str `shouldBe` "hello"
     pure ()
 
   it @_ @_ @EffTest_ "write mutex" do
     mutex <- Mutex.new @String 0 "hello"
-    runLEff L.do
-      lockScope \key -> L.do
-        (mg, key) <- Mutex.acquire key mutex
-        mg <- Mutex.write mg "world"
-        Mutex.release mg
-        dropKey key
-        L.pure (Ur (Ur ()))
+    lockScope \key -> L.do
+      (mg, key) <- Mutex.acquire key mutex
+      mg <- Mutex.write mg "world"
+      Mutex.release mg
+      dropKeyAndReturn key ()
 
-    str <- runLEff L.do
+    str <-
       lockScope \key -> L.do
         (mg, key) <- Mutex.acquire key mutex
         (Ur str, mg) <- Mutex.read mg
         Mutex.release mg
-        dropKey key
-        L.pure (Ur (Ur str))
+        dropKeyAndReturn key str
 
     liftIO $ str `shouldBe` "world"
 
@@ -104,37 +98,30 @@ spec = describe "Mutex" do
 
   it @_ @_ @EffTest_ "realeases mvar" do
     mutex <- Mutex.new @String 0 "hello"
-    runLEff L.do
-      lockScope \key -> L.do
-        (mg, key) <- Mutex.acquire key mutex
+    lockScope \key -> L.do
+      (mg, key) <- Mutex.acquire key mutex
 
-        liftEff do
-          isEmpty <- Eff.isEmptyMVar mutex.var
-          liftIO $ isEmpty `shouldBe` True
+      liftEff do
+        isEmpty <- Eff.isEmptyMVar mutex.var
+        liftIO $ isEmpty `shouldBe` True
 
-        Mutex.release mg
+      Mutex.release mg
 
-        liftEff do
-          isEmpty <- Eff.isEmptyMVar mutex.var
-          liftIO $ isEmpty `shouldBe` False
+      liftEff do
+        isEmpty <- Eff.isEmptyMVar mutex.var
+        liftIO $ isEmpty `shouldBe` False
 
-        dropKey key
-        L.pure (Ur (Ur ()))
+      dropKeyAndReturn key ()
 
     isEmpty <- Eff.isEmptyMVar mutex.var
     liftIO $ isEmpty `shouldBe` False
 
   it @_ @_ @EffTest_ "can't nest lock scopes" do
     let run =
-          runLEff L.do
-            lockScope \key -> L.do
-              liftEff do
-                runLEff L.do
-                  lockScope \key -> L.do
-                    dropKey key
-                    L.pure (Ur (Ur ()))
-              dropKey key
-              L.pure (Ur (Ur ()))
+          lockScope \key -> L.do
+            lockScope' \key -> L.do
+              dropKeyAndReturn key ()
+            dropKeyAndReturn key ()
 
     liftIO $ runEffTest run `shouldThrow` \(_ :: NestedLocksScopeException) -> True
 
@@ -145,66 +132,51 @@ spec = describe "Mutex" do
     tid <- myThreadId
 
     getThreadIds >>= \tids -> liftIO $ tids `shouldNotContain` [tid]
-    runLEff L.do
-      lockScope \key -> L.do
-        liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
-        dropKey key
-        L.pure (Ur (Ur ()))
+    lockScope \key -> L.do
+      liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
+      dropKeyAndReturn key ()
     getThreadIds >>= \tids -> liftIO $ tids `shouldNotContain` [tid]
 
     -- Check that the thread ID is removed even if an exception is thrown.
     let run =
-          runLEff L.do
-            lockScope \key -> L.do
-              liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
-              liftEff L.$ throwIO (userError "oops")
-              dropKey key
-              L.pure (Ur (Ur ()))
+          lockScope \key -> L.do
+            liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
+            liftEff L.$ throwIO (userError "oops")
+            dropKeyAndReturn key ()
     liftIO $ runEffTest run `shouldThrow` anyIOException
     getThreadIds >>= \tids -> liftIO $ tids `shouldNotContain` [tid]
 
     -- Check that the thread ID is removed even if when a nested lock scope is attempted
     let run =
-          runLEff L.do
-            lockScope \key -> L.do
-              liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
-              liftEff do
-                runLEff L.do
-                  lockScope \key -> L.do
-                    dropKey key
-                    L.pure (Ur (Ur ()))
-              dropKey key
-              L.pure (Ur (Ur ()))
+          lockScope \key -> L.do
+            liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
+            lockScope' \key -> L.do
+              dropKeyAndReturn key ()
+            dropKeyAndReturn key ()
     liftIO $ runEffTest run `shouldThrow` \(_ :: NestedLocksScopeException) -> True
     getThreadIds >>= \tids -> liftIO $ tids `shouldNotContain` [tid]
 
     -- Check that the thread ID is NOT removed if a nested lock scope is caught
-    runLEff L.do
-      lockScope \key -> L.do
-        liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
-        liftEff do
-          Left _ <- try @SomeException $
-            runLEff L.do
-              lockScope \key -> L.do
-                dropKey key
-                L.pure (Ur (Ur ()))
-          pure ()
-        liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
-        dropKey key
-        L.pure (Ur (Ur ()))
+    lockScope \key -> L.do
+      liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
+      liftEff do
+        Left _ <- try @SomeException $
+          lockScope \key -> L.do
+            dropKeyAndReturn key ()
+        pure ()
+      liftEff L.$ getThreadIds >>= \tids -> liftIO $ tids `shouldContain` [tid]
+      dropKeyAndReturn key ()
     getThreadIds >>= \tids -> liftIO $ tids `shouldNotContain` [tid]
 
   it @_ @_ @EffTest_ "rolls back on exception" do
     mutex <- Mutex.new @String 0 "hello"
     Left _ <- try @SomeException $
-      runLEff L.do
-        lockScope \key -> L.do
-          (mg, key) <- Mutex.acquire key mutex
-          mg <- Mutex.write mg "world"
-          liftEff $ throwIO (userError "oops")
-          Mutex.release mg
-          dropKey key
-          L.pure (Ur (Ur ()))
+      lockScope \key -> L.do
+        (mg, key) <- Mutex.acquire key mutex
+        mg <- Mutex.write mg "world"
+        liftEff $ throwIO (userError "oops")
+        Mutex.release mg
+        dropKeyAndReturn key ()
 
     -- The MVar should have been released, and the original value should have been put back into the MVar.
     mbResult <- Eff.tryTakeMVar mutex.var
@@ -213,14 +185,12 @@ spec = describe "Mutex" do
   it @_ @_ @EffTest_ "rolls back on imprecise exception" do
     mutex <- Mutex.new @String 0 "hello"
     Left _ <- try @SomeException do
-      runLEff L.do
-        lockScope \key -> L.do
-          (mg, key) <- Mutex.acquire key mutex
-          mg <- Mutex.write mg "world"
-          error "err"
-          Mutex.release mg
-          dropKey key
-          L.pure (Ur (Ur ()))
+      lockScope \key -> L.do
+        (mg, key) <- Mutex.acquire key mutex
+        mg <- Mutex.write mg "world"
+        error "err"
+        Mutex.release mg
+        dropKeyAndReturn key ()
 
     -- The MVar should have been released, and the original value should have been put back into the MVar.
     mbResult <- Eff.tryTakeMVar mutex.var
@@ -233,12 +203,10 @@ spec = describe "Mutex" do
   it @_ @_ @EffTest_ "release doesn't evaluate value to normal form" do
     mutex <- Mutex.new @[Int] 0 [1]
 
-    runLEff L.do
-      lockScope \key -> L.do
-        (mg, key) <- Mutex.acquire key mutex
-        -- This should not throw, the "error" thunk should not be evaluated
-        mg <- Mutex.write mg [1, 2, error "oops", 4]
-        -- This should not throw
-        Mutex.release mg
-        dropKey key
-        L.pure (Ur (Ur ()))
+    lockScope \key -> L.do
+      (mg, key) <- Mutex.acquire key mutex
+      -- This should not throw, the "error" thunk should not be evaluated
+      mg <- Mutex.write mg [1, 2, error "oops", 4]
+      -- This should not throw
+      Mutex.release mg
+      dropKeyAndReturn key ()

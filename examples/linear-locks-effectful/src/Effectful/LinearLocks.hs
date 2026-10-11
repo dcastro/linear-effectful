@@ -6,7 +6,9 @@ module Effectful.LinearLocks
     -- * Lock scope
     LL.LockKey,
     lockScope,
+    lockScope',
     dropKey,
+    dropKeyAndReturn,
     LL.NestedLocksScopeException (..),
 
     -- * Lock sets
@@ -17,12 +19,10 @@ module Effectful.LinearLocks
   )
 where
 
-import Control.Monad.IO.Class.Linear qualified as Linear
 import Data.Unrestricted.Linear (Ur)
 import Effectful
-import Effectful.Dispatch.Static (unsafeEff_)
-import Effectful.Linear (LEff)
-import Effectful.Linear qualified as LE
+import Effectful.Dispatch.Static (unsafeEff, unsafeEff_)
+import Effectful.Linear (LEff, liftEff)
 import Effectful.Linear.Resource (WithResource)
 import Effectful.Linear.Resource qualified as LER
 import Effectful.LinearLocks.Internal
@@ -47,17 +47,32 @@ lockScope ::
   forall a es.
   (Locks :> es, IOE :> es) =>
   (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
-  LEff es a
+  Eff es a
 lockScope run =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LE.unsafeLEff \env ->
-      Linear.liftSystemIO (LL.lockScope @a \key -> LER.toRIO env (run key))
+    unsafeEff \env ->
+      LL.lockScope @a \key -> LER.toRIO env (run key)
+
+-- Like 'lockScope' but returns in 'LEff'
+lockScope' ::
+  forall a es.
+  (Locks :> es, IOE :> es) =>
+  (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
+  LEff es a
+lockScope' =
+  liftEff . lockScope
 
 -- | Discard a key. Should be used after acquiring all the necessary locks in a lock scope.
 dropKey :: forall lvl es. (Locks :> es, WithResource :> es) => LockKey lvl %1 -> LEff es ()
 dropKey key =
   Utils.redundantConstraint @(Locks :> es) Control.do
     LER.fromRIO (LL.dropKey key)
+
+-- | Discard a key. Should be used after acquiring all the necessary locks in a lock scope.
+dropKeyAndReturn :: forall a lvl es. (Locks :> es, WithResource :> es) => LockKey lvl %1 -> a -> LEff es (Ur a)
+dropKeyAndReturn key a =
+  Utils.redundantConstraint @(Locks :> es) Control.do
+    LER.fromRIO (LL.dropKeyAndReturn key a)
 
 newLockSet :: forall es set. (IsLockSet set, Locks :> es) => set -> Eff es (LockSet set)
 newLockSet set =
