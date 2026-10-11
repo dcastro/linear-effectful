@@ -79,6 +79,7 @@ library
     Effectful.Linear.Internal
     Effectful.Linear.Resource
     Effectful.Linear.Resource.Internal
+    Effectful.WithIO
 
   -- cabal-gild: discover src --include=src/Effectful/Linear/Utils*/**
   other-modules:

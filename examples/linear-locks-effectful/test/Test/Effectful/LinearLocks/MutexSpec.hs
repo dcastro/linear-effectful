@@ -17,6 +17,7 @@ import Effectful.Fail (Fail, runFailIO)
 import Effectful.Linear
 import Effectful.LinearLocks
 import Effectful.LinearLocks.Mutex qualified as Mutex
+import Effectful.WithIO (WithIO, runWithIO)
 import LinearLocks.Internal qualified as Internal
 import LinearLocks.Internal.Mutex qualified as Internal
 import ListT qualified
@@ -26,7 +27,7 @@ import StmContainers.Set qualified as StmSet
 import Test.Effectful.LinearLocks.Utils
 import Test.Syd
 
-type TestEffects = '[Locks, Fail, Concurrent, IOE]
+type TestEffects = '[Locks, Fail, Concurrent, WithIO, IOE]
 
 type EffTest_ = EffTest ()
 
@@ -43,6 +44,7 @@ runEffTest eff =
     & runLocks
     & runFailIO
     & runConcurrent
+    & runWithIO
     & runEff
 
 -- | Doctests

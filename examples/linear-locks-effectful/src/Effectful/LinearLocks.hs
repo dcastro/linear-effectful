@@ -27,6 +27,7 @@ import Effectful.Linear.Resource (WithResource)
 import Effectful.Linear.Resource qualified as LER
 import Effectful.LinearLocks.Internal
 import Effectful.LinearLocks.Utils.RedundantConstraint qualified as Utils
+import Effectful.WithIO (WithIO)
 import GHC.TypeLits (type (+), type (<=))
 import LinearLocks (IsLockSet, LockKey, LockSet)
 import LinearLocks qualified as LL
@@ -45,7 +46,7 @@ import LinearLocks.Internal.LockSet qualified as LL.Internal
 -- Will throw a t`NestedLocksScopeException` if a nested `lockScope` is created at runtime.
 lockScope ::
   forall a es.
-  (Locks :> es, IOE :> es) =>
+  (Locks :> es, WithIO :> es) =>
   (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
   Eff es a
 lockScope run =
@@ -56,7 +57,7 @@ lockScope run =
 -- Like 'lockScope' but returns in 'LEff'
 lockScope' ::
   forall a es.
-  (Locks :> es, IOE :> es) =>
+  (Locks :> es, WithIO :> es) =>
   (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
   LEff es a
 lockScope' =

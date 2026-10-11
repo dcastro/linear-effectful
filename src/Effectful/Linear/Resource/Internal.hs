@@ -11,6 +11,7 @@ import Effectful.Dispatch.Static (SideEffects (..), StaticRep)
 import Effectful.Dispatch.Static.Primitive (Env)
 import Effectful.Linear.Dispatch.Static qualified as LinearStatic
 import Effectful.Linear.Internal
+import Effectful.WithIO (WithIO)
 import System.IO.Linear qualified as Linear
 import System.IO.Resource.Linear (RIO)
 import System.IO.Resource.Linear qualified as RIO
@@ -27,7 +28,7 @@ newtype instance StaticRep WithResource = WithResource (IORef Internal.ReleaseMa
 
 runResource ::
   forall a es.
-  (IOE :> es) =>
+  (WithIO :> es) =>
   -- NOTE: the `Ur a` prevents linear variables from *escaping* this scope,
   -- and the non-linear arrow prevents linear variables from *entering* this scope.
   LEff (WithResource : es) (Ur a) -> LEff es a
@@ -56,7 +57,7 @@ release res = fromRIO (RIO.release res)
 -- RIO Compatibility
 ----------------------------------------------------------------------------
 
-toRIO :: forall a es. (IOE :> es) => Env es -> LEff (WithResource : es) a %1 -> RIO a
+toRIO :: forall a es. (WithIO :> es) => Env es -> LEff (WithResource : es) a %1 -> RIO a
 toRIO env action =
   -- Create a RIO action that takes its internal "ReleaseMap",
   -- uses it to register a static effect in the Env,
