@@ -51,6 +51,25 @@ app2 = do
     dropKeyAndReturn key str
 \end{code}
 
+Known quirks
+---
+
+In `effectful`, static effects can signal that they use `IO` by setting `DispatchOf` to `WithSideEffects`.
+`evalStaticRep` + `MaybeIOE` will then ensure that the effect is interpreted into `IOE` at "the edge of the program" (e.g. in `main`).
+
+However, given that (1) `LEff` programs are meant to be embedded in larger `Eff` programs, and (2) the static effect `WithResource` has to be interpreted _within_ a `LEff` program,
+that means that `WithResource` will **NOT** be handled at "the edge of the program".
+
+And interpreting an effect into `IOE` in the middle of a program is not safe, as it introduces the ability to run arbitrary IO.
+
+For this reason, in this package, static effects are not interpreted into `IOE`; instead, they're interpreted into `WithIO`.
+
+* `WithIO` is similar to `IOE` in that it forbids the usage of `runPureEff`.
+* But unlike `IOE`, it does not have `MonadIO` / `MonadUnliftIO` instances.
+
+Thus having it in scope is safe, as it does not allow running arbitrary IO.
+
+
 
   [effectful]: https://hackage.haskell.org/package/effectful
   [linear-io]: https://hackage-content.haskell.org/package/linear-base/docs/System-IO-Linear.html
