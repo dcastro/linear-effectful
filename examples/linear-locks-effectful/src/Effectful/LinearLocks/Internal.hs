@@ -1,3 +1,5 @@
+{-# OPTIONS_HADDOCK not-home #-}
+
 module Effectful.LinearLocks.Internal where
 
 import Effectful
