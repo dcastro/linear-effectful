@@ -106,7 +106,8 @@ test-suite linear-effectful-test
   main-is: Spec.hs
   -- cabal-gild: discover test --exclude=test/Spec.hs
   other-modules:
-    Example.ExampleSpec
+    Example.Effectful.Linear.ExamplesSpec
+    Test.RedundantConstraint
 
   hs-source-dirs:
     test
@@ -116,6 +117,10 @@ test-suite linear-effectful-test
 
   build-depends:
     base,
+    effectful-core,
+    linear-base,
+    linear-effectful,
     sydtest,
+    text,
 
   default-language: GHC2024
