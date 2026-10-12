@@ -29,8 +29,13 @@ newtype instance StaticRep WithResource = MkWithResource (IORef Internal.Release
 runResource ::
   forall a es.
   (HasCallStack, WithIO :> es) =>
-  -- NOTE: the `Ur a` prevents linear variables from *escaping* this scope,
-  -- and the non-linear arrow prevents linear variables from *entering* this scope.
+  {-
+    NOTE:
+      * The `Ur a` prevents linear variables from *escaping* this scope.
+        This ensures that resources acquired in this scope have to be released within this scope.
+      * The non-linear arrow prevents linear variables from *entering* this scope.
+        This ensures that resources acquired in an outer scope cannot be released within this scope.
+  -}
   LEff (WithResource : es) (Ur a) -> LEff es a
 runResource action =
   unsafeLEff \env -> do

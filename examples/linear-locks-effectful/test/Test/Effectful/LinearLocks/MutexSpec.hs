@@ -50,7 +50,7 @@ runEffTest eff =
 -- | Doctests
 --
 -- >>> :{
--- >>> unit_mutexes_cannot_be_locked_in_wrong_order :: Locks :> es => Eff es ()
+-- >>> unit_mutexes_cannot_be_locked_in_wrong_order :: (Locks :> es, WithIO :> es) => Eff es ()
 -- >>> unit_mutexes_cannot_be_locked_in_wrong_order = do
 -- >>>   m1 <- Mutex.new 2 "hello"
 -- >>>   m2 <- Mutex.new 4 "world"
