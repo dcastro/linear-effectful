@@ -18,10 +18,10 @@ data Locks :: Effect
 
 type instance DispatchOf Locks = 'Static 'WithSideEffects
 
-data instance StaticRep Locks = Locks
+data instance StaticRep Locks = MkLocks
 
 runLocks :: (HasCallStack, IOE :> es) => Eff (Locks : es) a -> Eff es a
-runLocks = Static.evalStaticRep Locks
+runLocks = Static.evalStaticRep MkLocks
 
 ----------------------------------------------------------------------------
 -- Lifted functions

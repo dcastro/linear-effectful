@@ -2,11 +2,11 @@ expected_warnings:
   - |
 Warning: Effectful.Linear.Resource.Internal: could not find link destinations for:
         - System.IO.Resource.Linear.Internal.ReleaseMap
-        - Effectful.Linear.Resource.Internal.WithResource
+        - Effectful.Linear.Resource.Internal.MkWithResource
   - |
 Warning: Effectful.Linear.Resource: could not find link destinations for:
         - System.IO.Resource.Linear.Internal.ReleaseMap
-        - Effectful.Linear.Resource.Internal.WithResource
+        - Effectful.Linear.Resource.Internal.MkWithResource
   - |
 Warning: Effectful.WithIO: could not find link destinations for:
         - Effectful.WithIO.MkWithIO

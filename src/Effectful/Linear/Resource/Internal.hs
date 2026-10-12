@@ -24,7 +24,7 @@ data WithResource :: Effect
 
 type instance DispatchOf WithResource = 'Static 'WithSideEffects
 
-newtype instance StaticRep WithResource = WithResource (IORef Internal.ReleaseMap)
+newtype instance StaticRep WithResource = MkWithResource (IORef Internal.ReleaseMap)
 
 runResource ::
   forall a es.
@@ -67,7 +67,7 @@ toRIO env action =
     Ur rm <- getReleaseMap
     Linear.liftIO
       ( unLEff
-          (LinearStatic.evalStaticRep (WithResource rm) action)
+          (LinearStatic.evalStaticRep (MkWithResource rm) action)
           env
       )
   where
@@ -81,5 +81,5 @@ fromRIO (RIO.Internal.RIO rio) =
   -- because the `WithResource` effect is marked with `WithSideEffects`.
   -- Therefore, its name is not prefixed with "unsafe".
   Linear.do
-    Ur (WithResource rm) <- LinearStatic.getStaticRep @WithResource
+    Ur (MkWithResource rm) <- LinearStatic.getStaticRep @WithResource
     unsafeLEff_ (rio rm)
