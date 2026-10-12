@@ -1,7 +1,7 @@
 module Effectful.LinearLocks.Internal where
 
 import Effectful
-import Effectful.Dispatch.Static (SideEffects (..), StaticRep)
+import Effectful.Dispatch.Static (HasCallStack, SideEffects (..), StaticRep)
 import Effectful.Dispatch.Static qualified as Static
 import Effectful.Linear (LEff)
 import Effectful.Linear.Resource (WithResource)
@@ -20,7 +20,7 @@ type instance DispatchOf Locks = 'Static 'WithSideEffects
 
 data instance StaticRep Locks = Locks
 
-runLocks :: (IOE :> es) => Eff (Locks : es) a -> Eff es a
+runLocks :: (HasCallStack, IOE :> es) => Eff (Locks : es) a -> Eff es a
 runLocks = Static.evalStaticRep Locks
 
 ----------------------------------------------------------------------------

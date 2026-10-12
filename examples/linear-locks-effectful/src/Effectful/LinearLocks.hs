@@ -21,7 +21,7 @@ where
 
 import Data.Unrestricted.Linear (Ur)
 import Effectful
-import Effectful.Dispatch.Static (unsafeEff, unsafeEff_)
+import Effectful.Dispatch.Static (HasCallStack, unsafeEff, unsafeEff_)
 import Effectful.Linear (LEff, liftEff)
 import Effectful.Linear.Resource (WithResource)
 import Effectful.Linear.Resource qualified as LER
@@ -46,7 +46,7 @@ import LinearLocks.Internal.LockSet qualified as LL.Internal
 -- Will throw a t`NestedLocksScopeException` if a nested `lockScope` is created at runtime.
 lockScope ::
   forall a es.
-  (Locks :> es, WithIO :> es) =>
+  (HasCallStack, Locks :> es, WithIO :> es) =>
   (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
   Eff es a
 lockScope run =
@@ -57,7 +57,7 @@ lockScope run =
 -- Like 'lockScope' but returns in 'LEff'
 lockScope' ::
   forall a es.
-  (Locks :> es, WithIO :> es) =>
+  (HasCallStack, Locks :> es, WithIO :> es) =>
   (LockKey 0 %1 -> LEff (WithResource ': es) (Ur a)) ->
   LEff es a
 lockScope' =
