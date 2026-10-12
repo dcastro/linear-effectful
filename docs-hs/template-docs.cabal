@@ -43,4 +43,8 @@ library
     -Wno-missing-role-annotations
 
   build-depends:
-    base
+    base,
+    effectful,
+    linear-base,
+    linear-effectful,
+    linear-locks-effectful,

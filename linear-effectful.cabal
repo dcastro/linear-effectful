@@ -106,6 +106,7 @@ test-suite linear-effectful-test
   main-is: Spec.hs
   -- cabal-gild: discover test --exclude=test/Spec.hs
   other-modules:
+    Example.Effectful.Linear.Demo
     Example.Effectful.Linear.ExamplesSpec
     Test.RedundantConstraint
 
