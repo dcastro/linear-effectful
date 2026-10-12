@@ -45,7 +45,7 @@ read ::
   MutexGuard a %1 -> LEff es (Ur a, MutexGuard a)
 read mg =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO
+    LER.unsafeFromRIO
       (Mutex.read mg)
 
 -- | Writes a new value to the mutex, which will be committed when the guard is released.
@@ -55,12 +55,12 @@ read mg =
 write :: forall a es. (Locks :> es, WithResource :> es) => MutexGuard a %1 -> a -> LEff es (MutexGuard a)
 write mg newValue =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO
+    LER.unsafeFromRIO
       (Mutex.write mg newValue)
 
 -- | Releases the mutex and commits the latest value set by `write`.
 release :: forall a es. (Locks :> es, WithResource :> es) => MutexGuard a %1 -> LEff es ()
 release mg =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO
+    LER.unsafeFromRIO
       (Mutex.release mg)

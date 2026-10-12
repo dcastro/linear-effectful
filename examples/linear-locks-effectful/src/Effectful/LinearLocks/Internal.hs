@@ -39,4 +39,4 @@ acquire ::
   LEff es (LL.Internal.Guard acquirable, LockKey (LL.Internal.Level acquirable + 1))
 acquire key m = L.do
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO (LL.Internal.acquire key m)
+    LER.unsafeFromRIO (LL.Internal.acquire key m)

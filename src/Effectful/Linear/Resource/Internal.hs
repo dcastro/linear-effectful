@@ -47,11 +47,11 @@ runResource action =
 -- would be done with @fromSystemIO hClose@. Because this release function
 -- is an input, and could be wrong, this function is unsafe.
 unsafeAcquire :: (WithResource :> es) => Linear.IO (Ur a) -> (a -> Linear.IO ()) -> LEff es (RIO.Resource a)
-unsafeAcquire acquire release = fromRIO (RIO.unsafeAcquire acquire release)
+unsafeAcquire acquire release = unsafeFromRIO (RIO.unsafeAcquire acquire release)
 
 -- | @'release' r@ calls the release function provided when @r@ was acquired.
 release :: (WithResource :> es) => RIO.Resource a %1 -> LEff es ()
-release res = fromRIO (RIO.release res)
+release res = unsafeFromRIO (RIO.release res)
 
 ----------------------------------------------------------------------------
 -- RIO Compatibility
@@ -74,12 +74,8 @@ toRIO env action =
     getReleaseMap :: RIO (Ur (IORef RIO.Internal.ReleaseMap))
     getReleaseMap = RIO.Internal.RIO \rm -> Linear.pure (Ur rm)
 
-fromRIO :: (WithResource :> es) => RIO a %1 -> LEff es a
-fromRIO (RIO.Internal.RIO rio) =
-  -- NOTE: even though this function can be used to introduce arbitrary "IO" actions,
-  -- it cannot do so in *pure* effectful computations,
-  -- because the `WithResource` effect is marked with `WithSideEffects`.
-  -- Therefore, its name is not prefixed with "unsafe".
+unsafeFromRIO :: (WithResource :> es) => RIO a %1 -> LEff es a
+unsafeFromRIO (RIO.Internal.RIO rio) =
   Linear.do
     Ur (MkWithResource rm) <- LinearStatic.getStaticRep @WithResource
     unsafeLEff_ (rio rm)

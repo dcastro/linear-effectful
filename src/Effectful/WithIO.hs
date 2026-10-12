@@ -43,9 +43,9 @@ import Effectful.Dispatch.Static qualified as Static
 -- >>> hPutStrLn :: (LinearFileSystem :> es, WithResource :> es) => RIO.Handle %1 -> Text -> LEff es RIO.Handle
 -- >>> hClose    :: (LinearFileSystem :> es, WithResource :> es) => RIO.Handle %1 -> LEff es ()
 -- >>>
--- >>> openFile handle line = R.fromRIO (RIO.openFile handle line)
--- >>> hPutStrLn handle line = R.fromRIO (RIO.hPutStrLn handle line)
--- >>> hClose handle = R.fromRIO (RIO.hClose handle)
+-- >>> openFile handle line = R.unsafeFromRIO (RIO.openFile handle line)
+-- >>> hPutStrLn handle line = R.unsafeFromRIO (RIO.hPutStrLn handle line)
+-- >>> hClose handle = R.unsafeFromRIO (RIO.hClose handle)
 -- >>> :}
 --
 -- >>> :{

@@ -67,13 +67,13 @@ lockScope' =
 dropKey :: forall lvl es. (Locks :> es, WithResource :> es) => LockKey lvl %1 -> LEff es ()
 dropKey key =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO (LL.dropKey key)
+    LER.unsafeFromRIO (LL.dropKey key)
 
 -- | Discard a key. Should be used after acquiring all the necessary locks in a lock scope.
 dropKeyAndReturn :: forall a lvl es. (Locks :> es, WithResource :> es) => LockKey lvl %1 -> a -> LEff es (Ur a)
 dropKeyAndReturn key a =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO (LL.dropKeyAndReturn key a)
+    LER.unsafeFromRIO (LL.dropKeyAndReturn key a)
 
 newLockSet :: forall es set. (IsLockSet set, Locks :> es) => set -> Eff es (LockSet set)
 newLockSet set =
@@ -89,4 +89,4 @@ acquireMany ::
   LEff es (LL.Internal.LockSetGuard set, LockKey (lockLvl + 1))
 acquireMany key lockSet =
   Utils.redundantConstraint @(Locks :> es) Control.do
-    LER.fromRIO (LL.acquireMany key lockSet)
+    LER.unsafeFromRIO (LL.acquireMany key lockSet)

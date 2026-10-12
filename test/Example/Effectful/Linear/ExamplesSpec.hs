@@ -44,9 +44,9 @@ test1 = Linear.pure 1
 
 test2 :: (WithResource :> es) => LEff es (Ur (Ur Text))
 test2 = Linear.do
-  handle <- R.fromRIO (RIO.openFile "" RIO.ReadMode)
-  (Ur line, handle) <- R.fromRIO (RIO.hGetLine handle)
-  R.fromRIO (RIO.hClose handle)
+  handle <- R.unsafeFromRIO (RIO.openFile "" RIO.ReadMode)
+  (Ur line, handle) <- R.unsafeFromRIO (RIO.hGetLine handle)
+  R.unsafeFromRIO (RIO.hClose handle)
   Linear.pure (Ur (Ur line))
 
 -- NOTE: `runResource` is a static effect with side effects,
@@ -82,7 +82,7 @@ openFile ::
   FilePath -> RIO.IOMode -> LEff es RIO.Handle
 openFile handle line =
   redundantConstraint @(LinearFileSystem :> es) Linear.do
-    R.fromRIO (RIO.openFile handle line)
+    R.unsafeFromRIO (RIO.openFile handle line)
 
 hPutStrLn ::
   forall es.
@@ -90,7 +90,7 @@ hPutStrLn ::
   RIO.Handle %1 -> Text -> LEff es RIO.Handle
 hPutStrLn handle line =
   redundantConstraint @(LinearFileSystem :> es) Linear.do
-    R.fromRIO (RIO.hPutStrLn handle line)
+    R.unsafeFromRIO (RIO.hPutStrLn handle line)
 
 hClose ::
   forall es.
@@ -98,7 +98,7 @@ hClose ::
   RIO.Handle %1 -> LEff es ()
 hClose handle =
   redundantConstraint @(LinearFileSystem :> es) Linear.do
-    R.fromRIO (RIO.hClose handle)
+    R.unsafeFromRIO (RIO.hClose handle)
 
 dumpLog :: (LinearFileSystem :> es, WithIO :> es) => FilePath -> [Text] -> Eff es ()
 dumpLog fp logLines = do
