@@ -54,7 +54,8 @@ min-deps:
 # Run doctest for all components, or only for the given cabal targets. E.g. `just doctest linear-effectful:lib:linear-effectful`
 doctest *TARGETS:
     ./scripts/check_doctest.sh
-    ./scripts/run_doctest.sh {{ TARGETS }}
+    # The doctests need `text` to compile.
+    ./scripts/run_doctest.sh {{ TARGETS }} --with-package text
 
 haddock:
     ./scripts/check_haddock_warnings.sh lib:linear-effectful
