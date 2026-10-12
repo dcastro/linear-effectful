@@ -33,10 +33,11 @@ import Prelude hiding (read)
 --
 -- It does not have to be unique, multiple mutexes can have the same level.
 -- Mutexes with the same level can be added to a t`LinearLocks.LockSet` and acquired with 'LinearLocks.acquireMany'.
-new :: forall a es. forall (lvl :: Nat) -> a -> Eff es (Mutex lvl a)
+new :: forall a es. (Locks :> es) => forall (lvl :: Nat) -> a -> Eff es (Mutex lvl a)
 new lvl a = do
-  unsafeEff_ $
-    Mutex.new lvl a
+  Utils.redundantConstraint @(Locks :> es) do
+    unsafeEff_ $
+      Mutex.new lvl a
 
 read ::
   forall a es.
