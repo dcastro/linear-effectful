@@ -1,4 +1,9 @@
-module Effectful.WithIO where
+module Effectful.WithIO
+  ( WithIO,
+    MaybeWithIO,
+    runWithIO,
+  )
+where
 
 import Data.Kind (Constraint)
 import Effectful
