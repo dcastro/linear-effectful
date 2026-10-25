@@ -7,6 +7,8 @@ import Control.Functor.Linear qualified as Control
 import Control.Monad.IO.Class.Linear qualified as Linear
 import Control.Monad.Trans.Reader (ReaderT (..))
 import Data.Functor.Linear qualified as Data
+import Data.Monoid (Ap (..))
+import Data.Monoid.Linear qualified as Linear
 import Data.Unrestricted.Linear (Ur)
 import Effectful
 import Effectful.Dispatch.Static qualified as Static
@@ -23,7 +25,12 @@ newtype LEff (es :: [Effect]) a = LEff (Env es -> Linear.IO a)
       Control.Applicative,
       Control.Monad
     )
-    via (ReaderT (Env es) Linear.IO)
+    via ReaderT (Env es) Linear.IO
+  deriving
+    ( Linear.Semigroup,
+      Linear.Monoid
+    )
+    via Ap (ReaderT (Env es) Linear.IO) a
 
 -- We don't want `LEff es1 a` to be coercible to `LEff es2 a`.
 type role LEff nominal representational
